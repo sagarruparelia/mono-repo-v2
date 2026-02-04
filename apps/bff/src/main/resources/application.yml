@@ -12,6 +12,11 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid, profile, email
+          hcp:
+            provider: hcp
+            client-id: ${HCP_CLIENT_ID}
+            client-secret: ${HCP_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
         provider:
           hsid:
             issuer-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}
@@ -20,6 +25,8 @@ spring:
             jwk-set-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}/oidc/jwks
             user-info-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}/oidc/userinfo
             user-name-attribute: sub
+          hcp:
+            token-uri: ${HCP_TOKEN_URI:https://hcp.com/oauth2/token}
 
 server:
   port: 8080
