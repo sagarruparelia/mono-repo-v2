@@ -36,3 +36,9 @@ app:
   frontend-error-path: ${FRONTEND_ERROR_PATH:http://localhost:4202/auth-error}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4202,http://localhost:4203,http://localhost:4204}
+  user-service:
+    base-url: ${USER_SERVICE_BASE_URL:https://user-service.example.com}
+  psn:
+    base-url: ${PSN_BASE_URL:https://psn.example.com}
+  session:
+    duration-minutes: ${SESSION_DURATION_MINUTES:30}

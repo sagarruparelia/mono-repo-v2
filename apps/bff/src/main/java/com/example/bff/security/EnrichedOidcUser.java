@@ -1,5 +1,6 @@
 package com.example.bff.security;
 
+import com.example.bff.model.SessionInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -31,5 +32,9 @@ public class EnrichedOidcUser extends DefaultOidcUser {
             return (T) additionalAttributes.get(name);
         }
         return super.getAttribute(name);
+    }
+
+    public SessionInfo getSessionInfo() {
+        return (SessionInfo) additionalAttributes.get("sessionInfo");
     }
 }
