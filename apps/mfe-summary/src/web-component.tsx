@@ -4,7 +4,7 @@ import { SummaryApp } from './app/SummaryApp';
 createWebComponent({
   tagName: 'mfe-summary',
   Component: SummaryApp,
-  observedAttributes: ['user-id', 'embedded', 'api-base-url', 'styles-url'],
+  observedAttributes: ['user-id', 'styles-url'],
   shadow: true,
 });
 

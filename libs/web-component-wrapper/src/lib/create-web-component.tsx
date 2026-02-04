@@ -1,6 +1,7 @@
 import { ComponentType, StrictMode } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { QueryProvider, createQueryClient } from '@mono-repo-v2/shared-query';
+import { MfeConfigProvider, Persona } from '@mono-repo-v2/shared-auth';
 
 interface WebComponentOptions {
   tagName: string;
@@ -56,14 +57,26 @@ export function createWebComponent(options: WebComponentOptions): void {
       if (!this.root) return;
 
       const props = this.getPropsFromAttributes();
+      const mfeConfig = this.getMfeConfig();
 
       this.root.render(
         <StrictMode>
           <QueryProvider client={this.queryClient}>
-            <Component {...props} />
+            <MfeConfigProvider {...mfeConfig}>
+              <Component {...props} />
+            </MfeConfigProvider>
           </QueryProvider>
         </StrictMode>
       );
+    }
+
+    private getMfeConfig() {
+      return {
+        enterpriseId: this.getAttribute('enterprise-id') || '',
+        persona: (this.getAttribute('persona') || 'agent') as Persona,
+        serviceBaseUrl: this.getAttribute('service-base-url') || 'http://localhost:8080',
+        isEmbedded: true,
+      };
     }
 
     private getPropsFromAttributes(): Record<string, unknown> {

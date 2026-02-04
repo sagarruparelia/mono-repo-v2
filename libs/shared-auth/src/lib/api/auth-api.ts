@@ -9,6 +9,8 @@ export interface UserInfo {
   id: string;
   email: string;
   name: string;
+  enterpriseId: string;
+  persona: 'self' | 'parent' | 'agent' | 'state-worker';
 }
 
 export async function getSession(): Promise<SessionResponse> {

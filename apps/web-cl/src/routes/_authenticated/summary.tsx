@@ -6,7 +6,7 @@ export function SummaryPage() {
 
   return (
     <div className="summary-page">
-      <SummaryApp userId={user?.id} embedded={false} />
+      <SummaryApp userId={user?.id} />
     </div>
   );
 }

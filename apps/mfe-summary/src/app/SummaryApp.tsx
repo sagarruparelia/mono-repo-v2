@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMfeConfig } from '@mono-repo-v2/shared-auth';
 
 interface SummaryAppProps {
   userId?: string;
-  embedded?: boolean;
-  apiBaseUrl?: string;
 }
 
 interface SummaryData {
@@ -30,20 +29,18 @@ async function fetchSummary(
   return response.json();
 }
 
-export function SummaryApp({
-  userId,
-  embedded = false,
-  apiBaseUrl = 'http://localhost:8080',
-}: SummaryAppProps) {
+export function SummaryApp({ userId }: SummaryAppProps) {
+  const { serviceBaseUrl, isEmbedded } = useMfeConfig();
+
   const { data: summary, isLoading, error } = useQuery<SummaryData>({
     queryKey: ['summary', userId],
-    queryFn: () => fetchSummary(userId, apiBaseUrl),
+    queryFn: () => fetchSummary(userId, serviceBaseUrl),
     retry: 1,
   });
 
   if (isLoading) {
     return (
-      <div className={`summary-app ${embedded ? 'embedded' : 'standalone'}`}>
+      <div className={`summary-app ${isEmbedded ? 'embedded' : 'standalone'}`}>
         <div className="summary-loading">Loading summary...</div>
       </div>
     );
@@ -51,14 +48,14 @@ export function SummaryApp({
 
   if (error) {
     return (
-      <div className={`summary-app ${embedded ? 'embedded' : 'standalone'}`}>
+      <div className={`summary-app ${isEmbedded ? 'embedded' : 'standalone'}`}>
         <div className="summary-error">Failed to load summary</div>
       </div>
     );
   }
 
   return (
-    <div className={`summary-app ${embedded ? 'embedded' : 'standalone'}`}>
+    <div className={`summary-app ${isEmbedded ? 'embedded' : 'standalone'}`}>
       <h2>Summary</h2>
       {summary && (
         <div className="summary-content">

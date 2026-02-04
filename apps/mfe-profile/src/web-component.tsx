@@ -4,7 +4,7 @@ import { ProfileApp } from './app/ProfileApp';
 createWebComponent({
   tagName: 'mfe-profile',
   Component: ProfileApp,
-  observedAttributes: ['user-id', 'embedded', 'api-base-url', 'styles-url'],
+  observedAttributes: ['user-id', 'styles-url'],
   shadow: true,
 });
 

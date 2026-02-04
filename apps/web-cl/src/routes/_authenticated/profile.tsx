@@ -6,7 +6,7 @@ export function ProfilePage() {
 
   return (
     <div className="profile-page">
-      <ProfileApp userId={user?.id} embedded={false} />
+      <ProfileApp userId={user?.id} />
     </div>
   );
 }

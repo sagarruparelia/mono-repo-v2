@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMfeConfig } from '@mono-repo-v2/shared-auth';
 
 interface ProfileAppProps {
   userId?: string;
-  embedded?: boolean;
-  apiBaseUrl?: string;
 }
 
 interface UserProfile {
@@ -28,20 +27,18 @@ async function fetchProfile(
   return response.json();
 }
 
-export function ProfileApp({
-  userId,
-  embedded = false,
-  apiBaseUrl = 'http://localhost:8080',
-}: ProfileAppProps) {
+export function ProfileApp({ userId }: ProfileAppProps) {
+  const { serviceBaseUrl, isEmbedded } = useMfeConfig();
+
   const { data: profile, isLoading, error } = useQuery<UserProfile>({
     queryKey: ['profile', userId],
-    queryFn: () => fetchProfile(userId, apiBaseUrl),
+    queryFn: () => fetchProfile(userId, serviceBaseUrl),
     retry: 1,
   });
 
   if (isLoading) {
     return (
-      <div className={`profile-app ${embedded ? 'embedded' : 'standalone'}`}>
+      <div className={`profile-app ${isEmbedded ? 'embedded' : 'standalone'}`}>
         <div className="profile-loading">Loading profile...</div>
       </div>
     );
@@ -49,14 +46,14 @@ export function ProfileApp({
 
   if (error) {
     return (
-      <div className={`profile-app ${embedded ? 'embedded' : 'standalone'}`}>
+      <div className={`profile-app ${isEmbedded ? 'embedded' : 'standalone'}`}>
         <div className="profile-error">Failed to load profile</div>
       </div>
     );
   }
 
   return (
-    <div className={`profile-app ${embedded ? 'embedded' : 'standalone'}`}>
+    <div className={`profile-app ${isEmbedded ? 'embedded' : 'standalone'}`}>
       <h2>User Profile</h2>
       {profile && (
         <div className="profile-content">
