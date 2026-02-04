@@ -11,6 +11,10 @@ import { AuthenticatedLayout } from './routes/_authenticated';
 import { DashboardPage } from './routes/_authenticated/dashboard';
 import { ProfilePage } from './routes/_authenticated/profile';
 import { SummaryPage } from './routes/_authenticated/summary';
+import { CareTeamPage } from './routes/_authenticated/care-team';
+import { DocumentsPage } from './routes/_authenticated/documents';
+import { RecommendationsPage } from './routes/_authenticated/recommendations';
+import { ResourcesPage } from './routes/_authenticated/resources';
 
 const rootRoute = createRootRoute({
   component: RootLayout,
@@ -53,9 +57,41 @@ const summaryRoute = createRoute({
   component: SummaryPage,
 });
 
+const careTeamRoute = createRoute({
+  getParentRoute: () => authenticatedRoute,
+  path: '/care-team',
+  component: CareTeamPage,
+});
+
+const documentsRoute = createRoute({
+  getParentRoute: () => authenticatedRoute,
+  path: '/documents',
+  component: DocumentsPage,
+});
+
+const recommendationsRoute = createRoute({
+  getParentRoute: () => authenticatedRoute,
+  path: '/recommendations',
+  component: RecommendationsPage,
+});
+
+const resourcesRoute = createRoute({
+  getParentRoute: () => authenticatedRoute,
+  path: '/resources',
+  component: ResourcesPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  authenticatedRoute.addChildren([dashboardRoute, profileRoute, summaryRoute]),
+  authenticatedRoute.addChildren([
+    dashboardRoute,
+    profileRoute,
+    summaryRoute,
+    careTeamRoute,
+    documentsRoute,
+    recommendationsRoute,
+    resourcesRoute,
+  ]),
 ]);
 
 export const router = createRouter({

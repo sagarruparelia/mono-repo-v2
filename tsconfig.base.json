@@ -22,7 +22,11 @@
         "libs/web-component-wrapper/src/index.ts"
       ],
       "@mono-repo-v2/mfe-profile": ["apps/mfe-profile/src/app/ProfileApp.tsx"],
-      "@mono-repo-v2/mfe-health-summary": ["apps/mfe-health-summary/src/app/SummaryApp.tsx"]
+      "@mono-repo-v2/mfe-health-summary": ["apps/mfe-health-summary/src/app/SummaryApp.tsx"],
+      "@mono-repo-v2/mfe-care-team": ["apps/mfe-care-team/src/app/CareTeamApp.tsx"],
+      "@mono-repo-v2/mfe-documents": ["apps/mfe-documents/src/app/DocumentsApp.tsx"],
+      "@mono-repo-v2/mfe-recommendations": ["apps/mfe-recommendations/src/app/RecommendationsApp.tsx"],
+      "@mono-repo-v2/mfe-resources": ["apps/mfe-resources/src/app/ResourcesApp.tsx"]
     }
   },
   "exclude": ["node_modules", "tmp"]

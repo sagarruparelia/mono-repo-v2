@@ -89,6 +89,18 @@ jobs:
       - name: Build MFE Health Summary (web-component)
         run: BUILD_MODE=web-component npx nx build mfe-health-summary --configuration=production
 
+      - name: Build MFE Care Team (web-component)
+        run: BUILD_MODE=web-component npx nx build mfe-care-team --configuration=production
+
+      - name: Build MFE Documents (web-component)
+        run: BUILD_MODE=web-component npx nx build mfe-documents --configuration=production
+
+      - name: Build MFE Recommendations (web-component)
+        run: BUILD_MODE=web-component npx nx build mfe-recommendations --configuration=production
+
+      - name: Build MFE Resources (web-component)
+        run: BUILD_MODE=web-component npx nx build mfe-resources --configuration=production
+
       - name: Run Tests
         run: npx nx run-many --target=test --all
 
