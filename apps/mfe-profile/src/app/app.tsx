@@ -1,12 +1,11 @@
-// Uncomment this line to use CSS modules
-// import styles from './app.module.css';
-import NxWelcome from './nx-welcome';
+import { QueryProvider } from '@mono-repo-v2/shared-query';
+import { ProfileApp } from './ProfileApp';
 
 export function App() {
   return (
-    <div>
-      <NxWelcome title="mfe-profile" />
-    </div>
+    <QueryProvider>
+      <ProfileApp />
+    </QueryProvider>
   );
 }
 

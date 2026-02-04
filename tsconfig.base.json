@@ -15,7 +15,14 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@mono-repo-v2/shared-ui": ["libs/shared-ui/src/index.ts"]
+      "@mono-repo-v2/shared-ui": ["libs/shared-ui/src/index.ts"],
+      "@mono-repo-v2/shared-query": ["libs/shared-query/src/index.ts"],
+      "@mono-repo-v2/shared-auth": ["libs/shared-auth/src/index.ts"],
+      "@mono-repo-v2/web-component-wrapper": [
+        "libs/web-component-wrapper/src/index.ts"
+      ],
+      "@mono-repo-v2/mfe-profile": ["apps/mfe-profile/src/app/ProfileApp.tsx"],
+      "@mono-repo-v2/mfe-summary": ["apps/mfe-summary/src/app/SummaryApp.tsx"]
     }
   },
   "exclude": ["node_modules", "tmp"]

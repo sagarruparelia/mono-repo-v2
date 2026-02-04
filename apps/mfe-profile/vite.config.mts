@@ -3,6 +3,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import { resolve } from 'path';
+
+const isWebComponentBuild = process.env.BUILD_MODE === 'web-component';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
@@ -16,18 +19,34 @@ export default defineConfig(() => ({
     host: 'localhost',
   },
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //   plugins: () => [ nxViteTsPaths() ],
-  // },
-  build: {
-    outDir: '../../dist/apps/mfe-profile',
-    emptyOutDir: true,
-    reportCompressedSize: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
-  },
+  build: isWebComponentBuild
+    ? {
+        outDir: '../../dist/apps/mfe-profile/web-component',
+        emptyOutDir: true,
+        lib: {
+          entry: resolve(import.meta.dirname, 'src/web-component.tsx'),
+          name: 'MfeProfile',
+          fileName: 'mfe-profile',
+          formats: ['es', 'umd'] as const,
+        },
+        rollupOptions: {
+          external: ['react', 'react-dom'],
+          output: {
+            globals: {
+              react: 'React',
+              'react-dom': 'ReactDOM',
+            },
+          },
+        },
+      }
+    : {
+        outDir: '../../dist/apps/mfe-profile',
+        emptyOutDir: true,
+        reportCompressedSize: true,
+        commonjsOptions: {
+          transformMixedEsModules: true,
+        },
+      },
   test: {
     name: 'mfe-profile',
     watch: false,

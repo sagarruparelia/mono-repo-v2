@@ -1,0 +1,9 @@
+{
+  "name": "web-component-wrapper",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web-component-wrapper/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project web-component-wrapper --web",
+  "targets": {}
+}
