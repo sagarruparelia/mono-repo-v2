@@ -1,9 +1,9 @@
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:25-jre-alpine@sha256:ddb04ab0b5e7167b5563da2f9724090bdd59c9e80e74c42f675ee88b2ab2cfc9
 
 WORKDIR /app
 
-# Copy pre-built JAR from CI
-COPY apps/bff/target/*.jar app.jar
+# Copy pre-built JAR from CI (expect exactly one JAR)
+COPY apps/bff/target/bff-*.jar app.jar
 
 # Create non-root user
 RUN addgroup -S spring && adduser -S spring -G spring
