@@ -27,11 +27,11 @@ import java.util.List;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    @Value("${app.frontend-redirect-uri}")
-    private String frontendRedirectUri;
+    @Value("${app.frontend-redirect-path}")
+    private String frontendRedirectPath;
 
-    @Value("${app.frontend-error-uri}")
-    private String frontendErrorUri;
+    @Value("${app.frontend-error-path}")
+    private String frontendErrorPath;
 
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
@@ -71,14 +71,14 @@ public class SecurityConfig {
         return (webFilterExchange, authentication) -> {
             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
             webFilterExchange.getExchange().getResponse().getHeaders()
-                .setLocation(URI.create(frontendRedirectUri));
+                .setLocation(URI.create(frontendRedirectPath));
             return webFilterExchange.getExchange().getResponse().setComplete();
         };
     }
 
     private ServerAuthenticationFailureHandler authenticationFailureHandler() {
         return (webFilterExchange, exception) -> {
-            String errorUrl = frontendErrorUri + "?error=" +
+            String errorUrl = frontendErrorPath + "?error=" +
                 URLEncoder.encode(exception.getMessage(), StandardCharsets.UTF_8);
             webFilterExchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
             webFilterExchange.getExchange().getResponse().getHeaders()

@@ -14,29 +14,18 @@ spring:
             scope: openid, profile, email
         provider:
           hsid:
-            issuer-uri: https://nonprod.identity.healthsafe-id.com
-            authorization-uri: https://nonprod.identity.healthsafe-id.com/oidc/authorize
-            token-uri: https://nonprod.identity.healthsafe-id.com/oidc/token
-            jwk-set-uri: https://nonprod.identity.healthsafe-id.com/oidc/jwks
-            user-info-uri: https://nonprod.identity.healthsafe-id.com/oidc/userinfo
+            issuer-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}
+            authorization-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}/oidc/authorize
+            token-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}/oidc/token
+            jwk-set-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}/oidc/jwks
+            user-info-uri: ${HSID_IDP_ORIGIN:https://nonprod.identity.healthsafe-id.com}/oidc/userinfo
             user-name-attribute: sub
-
-  session:
-    store-type: redis
-    timeout: 30m
-    redis:
-      namespace: bff:session
-
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
 
 server:
   port: 8080
 
 app:
-  frontend-redirect-uri: ${FRONTEND_REDIRECT_URI:http://localhost:4202/dashboard}
-  frontend-error-uri: ${FRONTEND_ERROR_URI:http://localhost:4202/auth-error}
+  frontend-redirect-path: ${FRONTEND_REDIRECT_PATH:/dashboard}
+  frontend-error-path: ${FRONTEND_ERROR_PATH:/auth-error}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4202,http://localhost:4203,http://localhost:4204}
