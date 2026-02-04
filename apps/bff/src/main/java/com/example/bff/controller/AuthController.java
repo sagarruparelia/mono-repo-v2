@@ -1,6 +1,7 @@
 package com.example.bff.controller;
 
 import com.example.bff.model.UserInfo;
+import com.example.bff.security.EnrichedOidcUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,16 +37,25 @@ public class AuthController {
             oidcUser.getFullName()
         );
 
-        return Mono.just(SessionResponse.authenticated(userInfo));
-    }
-
-    public record SessionResponse(boolean authenticated, UserInfo user) {
-        public static SessionResponse unauthenticated() {
-            return new SessionResponse(false, null);
+        Map<String, Object> additionalData = Map.of();
+        if (oidcUser instanceof EnrichedOidcUser enrichedUser) {
+            additionalData = enrichedUser.getAdditionalAttributes();
         }
 
-        public static SessionResponse authenticated(UserInfo user) {
-            return new SessionResponse(true, user);
+        return Mono.just(SessionResponse.authenticated(userInfo, additionalData));
+    }
+
+    public record SessionResponse(
+            boolean authenticated,
+            UserInfo user,
+            Map<String, Object> additionalData
+    ) {
+        public static SessionResponse unauthenticated() {
+            return new SessionResponse(false, null, Map.of());
+        }
+
+        public static SessionResponse authenticated(UserInfo user, Map<String, Object> additionalData) {
+            return new SessionResponse(true, user, additionalData);
         }
     }
 }
