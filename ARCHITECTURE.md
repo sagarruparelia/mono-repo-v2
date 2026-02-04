@@ -63,7 +63,7 @@ mono-repo-v2/
 │   ├── web-cl/              # Main React SPA
 │   ├── web-cl-e2e/          # Playwright E2E tests
 │   ├── mfe-profile/         # Profile micro-frontend
-│   ├── mfe-summary/         # Summary micro-frontend
+│   ├── mfe-health-summary/  # Health summary micro-frontend
 │   └── bff/                 # Spring Boot backend
 ├── libs/
 │   ├── shared-auth/         # Auth context, hooks, API
@@ -97,24 +97,24 @@ The primary React SPA serving as the shell application.
 - `/` → Redirect to `/dashboard`
 - `/dashboard` → Main dashboard
 - `/profile` → Embedded mfe-profile
-- `/summary` → Embedded mfe-summary
+- `/summary` → Embedded mfe-health-summary
 
 **Dependencies:**
 - `@mono-repo-v2/shared-auth` - Authentication
 - `@mono-repo-v2/shared-query` - Query client
 - `@mono-repo-v2/mfe-profile` - Profile MFE (React import)
-- `@mono-repo-v2/mfe-summary` - Summary MFE (React import)
+- `@mono-repo-v2/mfe-health-summary` - Health Summary MFE (React import)
 
 ---
 
-### mfe-profile / mfe-summary (Micro-Frontends)
+### mfe-profile / mfe-health-summary (Micro-Frontends)
 
 Dual-mode React applications that can run standalone or as web components.
 
-| Property | mfe-profile | mfe-summary |
-|----------|-------------|-------------|
+| Property | mfe-profile | mfe-health-summary |
+|----------|-------------|---------------------|
 | Port (dev) | 4203 | 4204 |
-| Custom Element | `<mfe-profile>` | `<mfe-summary>` |
+| Custom Element | `<mfe-profile>` | `<mfe-health-summary>` |
 | API Endpoint | `/api/profile/{userId}` | `/api/summary/{userId}` |
 
 **Build Modes:**
@@ -251,7 +251,7 @@ web-cl (main app)
 ├── mfe-profile ──┬── shared-auth
 │                 ├── shared-query
 │                 └── web-component-wrapper
-└── mfe-summary ──┬── shared-auth
+└── mfe-health-summary ──┬── shared-auth
                   ├── shared-query
                   └── web-component-wrapper
 
@@ -264,7 +264,7 @@ bff (independent - no JS dependencies)
   "@mono-repo-v2/shared-auth": ["libs/shared-auth/src/index.ts"],
   "@mono-repo-v2/shared-query": ["libs/shared-query/src/index.ts"],
   "@mono-repo-v2/mfe-profile": ["apps/mfe-profile/src/app/ProfileApp.tsx"],
-  "@mono-repo-v2/mfe-summary": ["apps/mfe-summary/src/app/SummaryApp.tsx"]
+  "@mono-repo-v2/mfe-health-summary": ["apps/mfe-health-summary/src/app/SummaryApp.tsx"]
 }
 ```
 
@@ -392,7 +392,7 @@ function ProfilePage() {
 npm ci
 nx build web-cl --configuration=production
 BUILD_MODE=web-component nx build mfe-profile --configuration=production
-BUILD_MODE=web-component nx build mfe-summary --configuration=production
+BUILD_MODE=web-component nx build mfe-health-summary --configuration=production
 
 # BFF (runs in CI, not in Docker)
 cd apps/bff && ./mvnw package -DskipTests
@@ -458,7 +458,7 @@ jobs:
       - npm ci
       - nx build web-cl
       - BUILD_MODE=web-component nx build mfe-profile
-      - BUILD_MODE=web-component nx build mfe-summary
+      - BUILD_MODE=web-component nx build mfe-health-summary
       - nx run-many --target=test
       - docker build
 ```
@@ -489,7 +489,7 @@ npm ci
 # Development servers
 npm run dev              # web-cl on :4202
 npm run dev:mfe-profile  # mfe-profile on :4203
-npm run dev:mfe-summary  # mfe-summary on :4204
+npm run dev:mfe-health-summary  # mfe-health-summary on :4204
 
 # BFF
 cd apps/bff && ./mvnw spring-boot:run

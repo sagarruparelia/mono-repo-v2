@@ -8,7 +8,7 @@ COPY dist/apps/web-cl /usr/share/nginx/html
 
 # Copy MFE bundles for external consumers
 COPY dist/apps/mfe-profile/web-component /usr/share/nginx/html/mfe/profile
-COPY dist/apps/mfe-summary/web-component /usr/share/nginx/html/mfe/summary
+COPY dist/apps/mfe-health-summary/web-component /usr/share/nginx/html/mfe/summary
 
 # Create non-root user and set permissions
 RUN addgroup -S nginx-app && adduser -S nginx-app -G nginx-app \

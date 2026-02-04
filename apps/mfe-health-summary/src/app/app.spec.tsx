@@ -11,7 +11,7 @@ describe('App', () => {
   it('should have a greeting as the title', () => {
     const { getAllByText } = render(<App />);
     expect(
-      getAllByText(new RegExp('Welcome mfe-summary', 'gi')).length > 0,
+      getAllByText(new RegExp('Welcome mfe-health-summary', 'gi')).length > 0,
     ).toBeTruthy();
   });
 });

@@ -86,8 +86,8 @@ jobs:
       - name: Build MFE Profile (web-component)
         run: BUILD_MODE=web-component npx nx build mfe-profile --configuration=production
 
-      - name: Build MFE Summary (web-component)
-        run: BUILD_MODE=web-component npx nx build mfe-summary --configuration=production
+      - name: Build MFE Health Summary (web-component)
+        run: BUILD_MODE=web-component npx nx build mfe-health-summary --configuration=production
 
       - name: Run Tests
         run: npx nx run-many --target=test --all

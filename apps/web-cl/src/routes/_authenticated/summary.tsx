@@ -1,5 +1,5 @@
 import { useAuth } from '@mono-repo-v2/shared-auth';
-import { SummaryApp } from '@mono-repo-v2/mfe-summary';
+import { SummaryApp } from '@mono-repo-v2/mfe-health-summary';
 
 export function SummaryPage() {
   const { user } = useAuth();

@@ -22,7 +22,7 @@
         "libs/web-component-wrapper/src/index.ts"
       ],
       "@mono-repo-v2/mfe-profile": ["apps/mfe-profile/src/app/ProfileApp.tsx"],
-      "@mono-repo-v2/mfe-summary": ["apps/mfe-summary/src/app/SummaryApp.tsx"]
+      "@mono-repo-v2/mfe-health-summary": ["apps/mfe-health-summary/src/app/SummaryApp.tsx"]
     }
   },
   "exclude": ["node_modules", "tmp"]
