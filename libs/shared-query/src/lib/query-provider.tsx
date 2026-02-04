@@ -3,11 +3,11 @@ import { ReactNode, useState } from 'react';
 import { createQueryClient } from './query-client';
 
 interface QueryProviderProps {
-  children: ReactNode;
-  client?: QueryClient;
+  readonly children: ReactNode;
+  readonly client?: QueryClient;
 }
 
-export function QueryProvider({ children, client }: QueryProviderProps) {
+export function QueryProvider({ children, client }: Readonly<QueryProviderProps>) {
   const [queryClient] = useState(() => client ?? createQueryClient());
 
   return (

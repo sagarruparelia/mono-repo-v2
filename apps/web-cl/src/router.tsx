@@ -4,7 +4,12 @@ import {
   createRoute,
   redirect,
 } from '@tanstack/react-router';
-import { getSession } from '@mono-repo-v2/shared-auth';
+import { getSession, type UserInfo } from '@mono-repo-v2/shared-auth';
+
+// Route context types
+interface AuthenticatedRouteContext {
+  user: UserInfo;
+}
 import { RootLayout } from './routes/__root';
 import { IndexPage } from './routes/index';
 import { AuthenticatedLayout } from './routes/_authenticated';
@@ -18,6 +23,12 @@ import { ResourcesPage } from './routes/_authenticated/resources';
 
 const rootRoute = createRootRoute({
   component: RootLayout,
+  notFoundComponent: () => (
+    <div className="not-found">
+      <h1>404 - Page Not Found</h1>
+      <p>The page you're looking for doesn't exist.</p>
+    </div>
+  ),
 });
 
 const indexRoute = createRoute({
@@ -29,13 +40,22 @@ const indexRoute = createRoute({
 const authenticatedRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: 'authenticated',
-  beforeLoad: async () => {
+  beforeLoad: async (): Promise<AuthenticatedRouteContext> => {
     const session = await getSession();
-    if (!session.authenticated) {
+    if (!session.authenticated || !session.user) {
       throw redirect({ to: '/' });
     }
     return { user: session.user };
   },
+  pendingComponent: () => (
+    <div className="auth-loading">Verifying authentication...</div>
+  ),
+  errorComponent: ({ error }) => (
+    <div className="auth-error">
+      <h2>Authentication Error</h2>
+      <p>{error instanceof Error ? error.message : 'An error occurred'}</p>
+    </div>
+  ),
   component: AuthenticatedLayout,
 });
 
@@ -97,6 +117,9 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
+  defaultPreloadStaleTime: 0, // Always check for fresh data on preload
+  defaultPendingMinMs: 200, // Avoid flashing loading states for fast loads
+  defaultPendingMs: 1000, // Show pending state after 1s if still loading
 });
 
 declare module '@tanstack/react-router' {
