@@ -1,15 +1,13 @@
 package com.example.bff.controller;
 
-import com.example.bff.config.OidcProperties;
-import com.example.bff.model.Session;
 import com.example.bff.model.UserInfo;
-import com.example.bff.service.AuthService;
-import com.example.bff.service.SessionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -18,119 +16,35 @@ import java.net.URI;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthService authService;
-    private final SessionService sessionService;
-    private final OidcProperties oidcProperties;
-
-    public AuthController(AuthService authService, SessionService sessionService, OidcProperties oidcProperties) {
-        this.authService = authService;
-        this.sessionService = sessionService;
-        this.oidcProperties = oidcProperties;
-    }
-
     @GetMapping("/login")
-    public Mono<ResponseEntity<Void>> login(ServerHttpResponse response) {
-        return authService.initiateLogin()
-                .map(authState -> {
-                    response.addCookie(
-                            ResponseCookie.from("AUTH_STATE", authState.state())
-                                    .httpOnly(true)
-                                    .secure(false)
-                                    .sameSite("Lax")
-                                    .path("/")
-                                    .maxAge(300)
-                                    .build()
-                    );
-
-                    return ResponseEntity
-                            .status(HttpStatus.FOUND)
-                            .location(URI.create(authState.authorizationUrl()))
-                            .build();
-                });
-    }
-
-    @GetMapping("/callback")
-    public Mono<ResponseEntity<Void>> callback(
-            @RequestParam("code") String code,
-            @RequestParam("state") String state,
-            @CookieValue(value = "AUTH_STATE", required = false) String storedState,
-            ServerHttpResponse response) {
-
-        if (storedState == null || !state.equals(storedState)) {
-            return Mono.just(ResponseEntity.badRequest().build());
-        }
-
-        return authService.exchangeCodeForTokens(code, state)
-                .flatMap(tokens -> sessionService.createSession(tokens))
-                .<ResponseEntity<Void>>map(session -> {
-                    response.addCookie(
-                            ResponseCookie.from("SESSION_ID", session.getId())
-                                    .httpOnly(true)
-                                    .secure(false)
-                                    .sameSite("Lax")
-                                    .path("/")
-                                    .maxAge(3600)
-                                    .build()
-                    );
-
-                    response.addCookie(
-                            ResponseCookie.from("AUTH_STATE", "")
-                                    .httpOnly(true)
-                                    .path("/")
-                                    .maxAge(0)
-                                    .build()
-                    );
-
-                    return ResponseEntity
-                            .status(HttpStatus.FOUND)
-                            .location(URI.create(oidcProperties.getFrontendRedirectUri()))
-                            .build();
-                })
-                .onErrorResume(e -> Mono.just(
-                        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-                ));
+    public Mono<Void> login(ServerHttpResponse response) {
+        response.setStatusCode(HttpStatus.FOUND);
+        response.getHeaders().setLocation(URI.create("/oauth2/authorization/hsid"));
+        return response.setComplete();
     }
 
     @GetMapping("/session")
-    public Mono<ResponseEntity<SessionResponse>> getSession(
-            @CookieValue(value = "SESSION_ID", required = false) String sessionId) {
-
-        if (sessionId == null) {
-            return Mono.just(ResponseEntity.ok(new SessionResponse(false, null)));
+    public Mono<SessionResponse> getSession(@AuthenticationPrincipal OidcUser oidcUser) {
+        if (oidcUser == null) {
+            return Mono.just(SessionResponse.unauthenticated());
         }
 
-        return sessionService.validateSession(sessionId)
-                .map(session -> {
-                    if (session == null) {
-                        return ResponseEntity.ok(new SessionResponse(false, null));
-                    }
-                    return ResponseEntity.ok(new SessionResponse(true, session.getUserInfo()));
-                })
-                .defaultIfEmpty(ResponseEntity.ok(new SessionResponse(false, null)));
-    }
+        UserInfo userInfo = new UserInfo(
+            oidcUser.getSubject(),
+            oidcUser.getEmail(),
+            oidcUser.getFullName()
+        );
 
-    @PostMapping("/logout")
-    public Mono<ResponseEntity<Void>> logout(
-            @CookieValue(value = "SESSION_ID", required = false) String sessionId,
-            ServerHttpResponse response) {
-
-        Mono<Void> destroySession = sessionId != null
-                ? sessionService.destroySession(sessionId)
-                : Mono.empty();
-
-        return destroySession
-                .then(Mono.fromRunnable(() -> {
-                    response.addCookie(
-                            ResponseCookie.from("SESSION_ID", "")
-                                    .httpOnly(true)
-                                    .path("/")
-                                    .maxAge(0)
-                                    .build()
-                    );
-                }))
-                .thenReturn(ResponseEntity.ok().build());
+        return Mono.just(SessionResponse.authenticated(userInfo));
     }
 
     public record SessionResponse(boolean authenticated, UserInfo user) {
+        public static SessionResponse unauthenticated() {
+            return new SessionResponse(false, null);
+        }
+
+        public static SessionResponse authenticated(UserInfo user) {
+            return new SessionResponse(true, user);
+        }
     }
 }
