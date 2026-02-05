@@ -1,6 +1,8 @@
 spring:
   application:
     name: bff
+  main:
+    web-application-type: reactive
 
   security:
     oauth2:

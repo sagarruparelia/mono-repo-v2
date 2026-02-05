@@ -18,12 +18,34 @@ This document describes the authentication and authorization flow in the BFF app
 
 ## Overview
 
-The BFF uses a dual OAuth2 client architecture:
+The BFF is a **fully reactive application** built on Spring WebFlux with Netty as the embedded server.
+
+**Stack:**
+- Spring Boot 4.0.2 / WebFlux (reactive-only)
+- Netty (non-blocking I/O)
+- Reactor (Mono/Flux)
+- No Servlet API
+
+**OAuth2 Architecture:**
 
 1. **HSID** (authorization_code) - Authenticates users via OIDC
 2. **HCP** (client_credentials) - Makes service-to-service API calls
 
 After authentication, users are enriched with a `SessionInfo` containing their **persona** (`"self"` or `"representative"`), which is used for fine-grained endpoint authorization.
+
+### Reactive Enforcement
+
+All controller methods **must** return `Mono<T>` or `Flux<T>`. The `@RequiredPersona` annotation enforces this at runtime:
+
+```java
+// ✓ Correct - returns Mono
+@RequiredPersona(Persona.SELF)
+public Mono<Response> endpoint() { ... }
+
+// ✗ Error - non-reactive return type
+@RequiredPersona(Persona.SELF)
+public Response endpoint() { ... }  // Throws IllegalStateException
+```
 
 ---
 

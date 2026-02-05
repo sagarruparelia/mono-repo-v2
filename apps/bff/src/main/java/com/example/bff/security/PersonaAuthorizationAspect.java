@@ -28,8 +28,8 @@ import java.util.Set;
  *   <li>Returns 403 Forbidden via {@link PersonaAccessDeniedException} if no match</li>
  * </ol>
  * <p>
- * <b>Supported return types:</b> {@link Mono} and {@link Flux} (standard for WebFlux controllers).
- * Non-reactive return types are wrapped in a Mono for proper authorization handling.
+ * <b>Supported return types:</b> {@link Mono} and {@link Flux} only.
+ * Non-reactive return types will throw {@link IllegalStateException} as this is a WebFlux-only application.
  */
 @Aspect
 @Component
@@ -73,15 +73,10 @@ public class PersonaAuthorizationAspect {
             return authorizationCheck.thenMany(methodFlux);
         }
 
-        // For non-reactive return types: defer method execution until after authorization
-        // This ensures the method only runs if authorization passes
-        return authorizationCheck
-                .then(Mono.fromCallable(() -> {
-                    try {
-                        return joinPoint.proceed();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                }));
+        // Non-reactive return types are not supported in this WebFlux application
+        throw new IllegalStateException(
+                "@RequiredPersona can only be used on methods returning Mono or Flux. " +
+                "Method '%s' returns '%s'. This is a WebFlux-only application."
+                        .formatted(signature.getMethod().getName(), returnType.getSimpleName()));
     }
 }
